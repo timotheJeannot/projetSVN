@@ -33,13 +33,13 @@ public class Automate {
         prop5=0;
         prop6=0;
         map1 = new HashMap<String, Boolean>();
-        map1.put("E0 Debloquer E1", false);
-        map1.put("E2 Debloquer E3", false);
-        map1.put("E0 Scan_KO E2", false);
+        map1.put("E0 UnLocking_OK E1", false);
+        map1.put("E2 UnLocking_KO E3", false);
+        map1.put("E0 Scan_OK E2", false);
         map2 = new HashMap<String, Boolean>();
-        map2.put("E0 Debloquer E2", false);
-        map2.put("E2 Debloquer E3", false);
-        map2.put("E0 Remove_KO E1", false);
+        map2.put("E0 UnLocking_OK E1", false);
+        map2.put("E2 UnLocking_KO E3", false);
+        map2.put("E0 Remove_OK E2", false);
         map3 = new HashMap<String, Boolean>();;
         map3.put("E0 [Panier=1]Remove_OK E1", false);
         map3.put("E1 Scan_OK E0", false);
@@ -48,30 +48,36 @@ public class Automate {
         map4.put("E1 Remove_OK E0", false);
         map4.put("E0 Scan_OK E1", false);
         map5 = new HashMap<String, Boolean>();;
-        map5.put("E0 [Panier>1]? E1", false);
-        map5.put("E0 Controle_KO[Transmission=1]? E2", false);
-        map5.put("E2 [Panier>1]? E3", false);
+        map5.put("E0 [Panier<1]? E1", false);
+        map5.put("E0 Controle_KO[Transmission:1] E2", false);
+        map5.put("E2 [Panier>=1]? E3", false);
         map6 = new HashMap<String, Boolean>();;
         map6.put("E0 Unlocking_OK E1", false);
-        map6.put("E1 Controle_OK[Transmission=1]? E3 ", false);
-        map6.put("E1 Paiement E2 ", false);
-        map6.put("E3 Controle_KO[Transmission=1]? E4", false);
-        map6.put("E3 Paiement E2", false);
+        map6.put("E1 Controle_OK[Transmission:1] E3 ", false);
+        map6.put("E1 Payment E2 ", false);
+        map6.put("E3 Controle_KO[Transmission:1] E4", false);
+        map6.put("E3 Payment E2", false);
     }
 
 
     public void debloquer() {
-        if(prop1 == 0){
-            map1.put("E0 Debloquer E1",true);
-            prop1 = 1;
+        switch (prop1){
+            case 0 : prop1 = 1;
+                map1.put("E0 UnLocking_OK E1", true);
+                break;
+            case 2 : prop1 = 3;
+                map1.put("E2 UnLocking_KO E3", true);
+                System.err.println("Error PROP 1 ");;
+                break;
         }
-        if(prop1 == 2){
-            map1.put("E2 Debloquer_KO E3", true);
-            prop1 = 3;
-        }
-        if(prop2 == 0){
-            map2.put("E0 Debloquer E2", true);
-            prop2 = 2;
+        switch (prop2){
+            case 0 : prop2 = 1;
+                map2.put("E0 UnLocking_OK E1", true);
+                break;
+            case 2 : prop2 = 3;
+                map2.put("E2 UnLocking_KO E3", true);
+                System.err.println("Error PROP 2 ");;
+                break;
         }
         if(prop6 == 0){
             map6.put("E0 Unlocking_OK E1", true);
@@ -90,15 +96,11 @@ public class Automate {
     }
 
     public void scanOK(){
-        switch (prop1){
-            case 2 : prop1 = 3;
-                map1.put("E2 Scan_OK E3", true);
-                break;
-            case 0 : prop1 = 1;
-                map1.put("E0 Scan_KO E1", true);
-                System.err.println("Error PROP 1 ");;
-                break;
+        if (prop1 == 0){
+            prop1 = 2;
+            map1.put("E0 Scan_OK E2", true);
         }
+
         if(prop3 == 1){
             map3.put("E1 Scan_OK E0", true);
             prop3 = 0;
@@ -117,21 +119,16 @@ public class Automate {
             map4.put("E1 Remove_OK E0", true);
         }
 
-        switch (prop2){
-            case 2 : prop2 = 3;
-                map2.put("E2 Remove_OK E3", true);
-            break;
-            case 0 : prop2 = 1;
-                map2.put("E0 Remove_KO E1", true);
-                System.err.println("Error PROP 2" );
-                break;
-        }
+        if (prop2 == 0 ){
+            prop2 = 2;
+            map2.put("E0 Remove_OK E2", true);
 
+        }
 
         switch (prop3){
             case 1 : prop3 = 3;
                 map3.put("E1 Remove_KO E3", true);
-                System.err.println("ERROR Prop3");
+                System.err.println("ERROR PROP 3");
                 break;
             case 0 : if(panier == 1) {
                         map3.put("E0 [Panier=1]Remove_OK E1", true);
@@ -139,36 +136,38 @@ public class Automate {
                     }
                 break;
 
-            }
+        }
     }
 
     public void transmission(int panier, int r) {
+
                 if(panier >= 1 && prop5 == 0 && r == 1 ){
-                    map5.put("E0 [Panier>1]? E2", true);
+                    map5.put("E0 [Panier<1]? E1", true);
                     prop5 = 2;
 
                 }
                 else if(prop5 == 2 && r == 1){
-                    map5.put("E2 Controle_OK E3", true);
+                    map5.put("E2 [Panier>=1]? E3", true);
                     prop5 = 3;
                 }
                 else if(prop5 == 0 && r == 1){
-                    map5.put("E0 Controle_KO E1", true);
+                    map5.put("E0 Controle_KO[Transmission:1] E1", true);
                     prop5 = 1;
-                    System.err.println("ERROR PROP 5  " + r);
+                    System.err.println("ERROR PROP 5  ");
                 }
 
                 switch (prop6){
-                    case 1 : prop6 = 3;
+                    case 1 :
                         if(r == 1){
-                            map6.put("E1 Controle_OK E3 ", true);
+                            prop6 = 3;
+                            map6.put("E1 Controle_OK[Transmission:1] E3 ", true);
                         }
                     break;
                     case 3 :
                         if(r == 1){
                             prop6 = 4;
-                            map6.put("E3 Controle_KO E4", true);
-                            System.err.println("ERROR PROP 6  " + r);
+                            map6.put("E3 Controle_KO[Transmission:1] E4", true);
+                            System.err.println("ERROR PROP 6  ");
                         }
                         break;
                 }
@@ -176,12 +175,11 @@ public class Automate {
 
         public void payer(){
             if(prop6 == 1 || prop6 == 3){
-                System.err.println(prop6);
                 if(prop6 == 1 ){
-                    map6.put("E1 Paiement E2 ", true);
+                    map6.put("E1 Payment E2 ", true);
                 }
                 if(prop6 == 3){
-                    map6.put("E3 Paiement E2", true);
+                    map6.put("E3 Payment E2", true);
                 }
                 prop6 = 2;
             }
