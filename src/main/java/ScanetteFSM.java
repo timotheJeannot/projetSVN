@@ -41,6 +41,7 @@ public class ScanetteFSM implements FsmModel
     public void reset(boolean testing) {
         state = 0;
         adapter.reset();
+        automate.reset();
         panier = 0;
     }
 
@@ -138,7 +139,7 @@ public class ScanetteFSM implements FsmModel
     public void transmission() {
         int r = adapter.transmission();
         Assert.assertTrue(r == 1 || r == 0);
-        //automate.transmission(panier, state);
+        automate.transmission(panier, r);
         switch (state) {
             case 4:
             case 5:
@@ -153,12 +154,12 @@ public class ScanetteFSM implements FsmModel
                 break;
             case 12:
                 Assert.assertEquals(0, r);
-                automate.transmission(panier, state);
+
                 state = 20;
                 break;
             case 13:
                 Assert.assertEquals(0, r);
-                automate.transmission(panier, state);
+
                 state = 19;
         }
     }
@@ -239,10 +240,13 @@ public class ScanetteFSM implements FsmModel
     @Action
     public void payer() {
         double r = adapter.payer();
+        automate.payer();
         Assert.assertEquals(0, r, 1.0);
         state = 30;
     }
     public boolean payerGuard() {
         return state == 20;
     }
+
+    public void display(){automate.display();}
 }

@@ -18,6 +18,7 @@ public class Launcher {
         // initialization of the model
         ScanetteFSM model = new ScanetteFSM();
 
+
         /**
          * Test a system by making random walks through an EFSM model of the system.
          */
@@ -70,5 +71,7 @@ public class Launcher {
 
         // prints the coverage and quits the execution
         tester.printCoverage();
+        //couverture des transitions des automates de propriétés
+        model.display();
     }
 }
